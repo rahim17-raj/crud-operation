@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Home Page</title>
+<style>
+body {
+	font-family: Arial, sans-serif;
+	background-color: #f4f4f4;
+	margin: 0;
+	padding: 0;
+	height: 100vh;
+}
+
+h1 {
+	color: #333;
+	text-align: center;
+	margin-bottom: 20px;
+}
+
+form {
+	background: #fff;
+	padding: 20px;
+	border-radius: 8px;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	max-width: 500px;
+	width: 100%;
+}
+
+label {
+	display: block;
+	margin-bottom: 5px;
+	font-weight: bold;
+	color: #333;
+}
+
+input[type="text"], input[type="tel"], input[type="number"] {
+	width: 100%;
+	padding: 10px;
+	margin-bottom: 15px;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	box-sizing: border-box;
+}
+
+input[type="radio"] {
+	margin-right: 5px;
+}
+
+.radio-group {
+	margin-bottom: 15px;
+}
+
+.radio-label {
+	display: inline-block;
+	margin-right: 20px;
+	color: #333;
+}
+
+input[type="submit"] {
+	background-color: #007bff;
+	color: #fff;
+	border: none;
+	padding: 12px 20px;
+	border-radius: 4px;
+	cursor: pointer;
+	font-size: 16px;
+	font-weight: bold;
+	transition: background-color 0.3s ease;
+}
+
+input[type="submit"]:hover {
+	background-color: #0056b3;
+}
+
+/* Responsive Design */
+@media ( max-width : 600px) {
+	form {
+		padding: 15px;
+		box-shadow: none;
+	}
+	input[type="submit"] {
+		padding: 10px;
+		font-size: 14px;
+	}
+}
+</style>
+</head>
+<body>
+	<div align="center">
+		<h3 th:if="${fail}" style="color:red;" th:text="${fail}"></h3>
+		<h3 th:if="${edit}" style="color:green;" th:text="${edit}"></h3>
+		<h3 th:if="${delete}" style="color:red;" th:text="${delete}"></h3>
+		<h3 th:if="${success}" style="color:green;" th:text="${success}"></h3>
+	</div>
+	<br>
+	<div align="center" th:if="${list}">
+		<table border="1">
+			<tr>
+				<th>Name</th>
+				<th>Mobile</th>
+				<th>Gender</th>
+				<th>Sub1</th>
+				<th>Sub2</th>
+				<th>Sub3</th>
+				<th>Percentage</th>
+				<th>Edit</th>
+				<th>Delete</th>
+			</tr>
+			<tr th:each="students:${list}">
+				<th th:text="${students.name}">Name</th>
+				<th th:text="${students.mobile}">Mobile</th>
+				<th th:text="${students.gender}">Gender</th>
+				<th th:text="${students.sub1}">Sub1</th>
+				<th th:text="${students.sub2}">Sub2</th>
+				<th th:text="${students.sub3}">Sub3</th>
+				<th th:text="${#numbers.formatDecimal((students.sub1+students.sub2+students.sub3)/3.0,2,2)}">Percentage</th>
+				<th><a th:href="'/edit?id='+${students.id}"><button>Edit</button></a></th>
+				<th><a th:href="'/delete?id='+${students.id}"><button>Delete</button></a></th>
+			</tr>
+		</table>
+	</div>
+	<br>
+	<div th:if="${update}">
+		<form method="POST" action="/edit" th:object="${student}">
+		<input type="hidden" name="id" th:field="*{id}">
+		<!-- Input for Student Name -->
+		<label for="studentName">Student Name:</label> <input type="text"
+			id="studentName" name="name" th:field="*{name}" required>
+
+		<!-- Input for Mobile Number -->
+		<label for="mobileNumber">Mobile Number:</label> <input type="tel"
+			id="mobileNumber" name="mobile" th:field="*{mobile}" required>
+
+		<!-- Input for Gender -->
+		<div class="radio-group">
+			<label>Gender:</label> <label class="radio-label"> <input
+				type="radio" id="male" name="gender" th:field="*{gender}" value="male"> Male
+			</label> <label class="radio-label"> <input type="radio" id="female"
+				name="gender" th:field="*{gender}" value="female"> Female
+			</label>
+		</div>
+
+		<!-- Input for Marks of Subject 1 -->
+		<label for="subject1">Marks in Subject 1:</label> <input type="number"
+			id="subject1" name="sub1" th:field="*{sub1}" min="0" required>
+
+		<!-- Input for Marks of Subject 2 -->
+		<label for="subject2">Marks in Subject 2:</label> <input type="number"
+			id="subject2" name="sub2" th:field="*{sub2}" min="0" required>
+
+		<!-- Input for Marks of Subject 3 -->
+		<label for="subject3">Marks in Subject 3:</label> <input type="number"
+			id="subject3" name="sub3" th:field="*{sub3}" min="0" required>
+
+		<!-- Submit Button -->
+		<input type="submit" value="Submit">
+	</form>
+	</div>
+	<br>
+	<br>
+	<div align="center">
+		<a href="/insert"><button>Insert</button></a>
+	</div>
+	<br>
+	<div th:if="${insert}">
+		<form method="POST" action="/insert">
+        <!-- Input for Student Name -->
+        <label for="studentName">Student Name:</label>
+        <input type="text" id="studentName" name="name" required>
+        
+        <!-- Input for Mobile Number -->
+        <label for="mobileNumber">Mobile Number:</label>
+        <input type="tel" id="mobileNumber" name="mobile" required>
+        
+        <!-- Input for Gender -->
+        <div class="radio-group">
+            <label>Gender:</label>
+            <label class="radio-label">
+                <input type="radio" id="male" name="gender" value="male">
+                Male
+            </label>
+            <label class="radio-label">
+                <input type="radio" id="female" name="gender" value="female">
+                Female
+            </label>
+        </div>
+        
+        <!-- Input for Marks of Subject 1 -->
+        <label for="subject1">Marks in Subject 1:</label>
+        <input type="number" id="subject1" name="sub1" min="0" required>
+        
+        <!-- Input for Marks of Subject 2 -->
+        <label for="subject2">Marks in Subject 2:</label>
+        <input type="number" id="subject2" name="sub2" min="0" required>
+        
+        <!-- Input for Marks of Subject 3 -->
+        <label for="subject3">Marks in Subject 3:</label>
+        <input type="number" id="subject3" name="sub3" min="0" required>
+        
+        <!-- Submit Button -->
+        <input type="submit" value="Submit">
+    </form>
+	</div>
+</body>
+</html>
