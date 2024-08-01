@@ -19,4 +19,9 @@ public class Student {
 	private int sub1;
 	private int sub2;
 	private int sub3;
+	
+	public double getPercentage()
+	{
+		return (sub1+sub2+sub3)/3.0;
+	}
 }

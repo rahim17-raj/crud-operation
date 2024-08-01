@@ -10,12 +10,16 @@ body {
 	margin: 0;
 	padding: 0;
 	height: 100vh;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
 }
 
-h1 {
+h1, h3 {
 	color: #333;
 	text-align: center;
-	margin-bottom: 20px;
+	margin: 0 0 20px;
 }
 
 form {
@@ -25,6 +29,7 @@ form {
 	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 	max-width: 500px;
 	width: 100%;
+	margin-bottom: 20px;
 }
 
 label {
@@ -57,7 +62,7 @@ input[type="radio"] {
 	color: #333;
 }
 
-input[type="submit"] {
+input[type="submit"], button {
 	background-color: #007bff;
 	color: #fff;
 	border: none;
@@ -69,12 +74,40 @@ input[type="submit"] {
 	transition: background-color 0.3s ease;
 }
 
-input[type="submit"]:hover {
+input[type="submit"]:hover, button:hover {
 	background-color: #0056b3;
 }
 
-/* Responsive Design */
-@media ( max-width : 600px) {
+.table-container {
+	overflow-x: auto;
+	margin-bottom: 20px;
+	width: 100%;
+}
+
+table {
+	width: 100%;
+	border-collapse: collapse;
+	margin-bottom: 20px;
+}
+
+th, td {
+	border: 1px solid #ddd;
+	padding: 8px;
+	text-align: center;
+}
+
+th {
+	background-color: #007bff;
+	color: #fff;
+	font-weight: bold;
+	text-transform: uppercase;
+}
+
+td {
+	background-color: #f9f9f9;
+}
+
+@media (max-width: 600px) {
 	form {
 		padding: 15px;
 		box-shadow: none;
@@ -84,123 +117,158 @@ input[type="submit"]:hover {
 		font-size: 14px;
 	}
 }
+
+.input-container {
+	margin-top: 10px;
+}
+
+#inputBox {
+	display: none;
+}
+
+.search-container {
+	display: flex;
+	align-items: center;
+	margin-bottom: 20px;
+}
+
+.search-container label {
+	margin-right: 10px;
+	margin-bottom: 0;
+}
+
+.search-container select {
+	padding: 10px;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	margin-right: 10px;
+}
+
+.search-container input[type="text"] {
+	width: 200px;
+}
 </style>
+<script>
+	function showInputBox() {
+		var selectBox = document.getElementById("searchBy");
+		var selectedValue = selectBox.options[selectBox.selectedIndex].value;
+		var inputBox = document.getElementById("inputBox");
+		var inputLabel = document.getElementById("inputLabel");
+
+		if (selectedValue) {
+			inputLabel.textContent = "Enter " + selectedValue + ":";
+			inputBox.style.display = "block";
+		} else {
+			inputBox.style.display = "none";
+		}
+	}
+</script>
 </head>
 <body>
+	<h1>Student Management System</h1>
 	<div align="center">
-		<h3 th:if="${fail}" style="color:red;" th:text="${fail}"></h3>
-		<h3 th:if="${edit}" style="color:green;" th:text="${edit}"></h3>
-		<h3 th:if="${delete}" style="color:red;" th:text="${delete}"></h3>
-		<h3 th:if="${success}" style="color:green;" th:text="${success}"></h3>
+		<h3 th:if="${fail}" style="color: red;" th:text="${fail}"></h3>
+		<h3 th:if="${edit}" style="color: green;" th:text="${edit}"></h3>
+		<h3 th:if="${delete}" style="color: red;" th:text="${delete}"></h3>
+		<h3 th:if="${success}" style="color: green;" th:text="${success}"></h3>
 	</div>
-	<br>
-	<div align="center" th:if="${list}">
-		<table border="1">
-			<tr>
-				<th>Name</th>
-				<th>Mobile</th>
-				<th>Gender</th>
-				<th>Sub1</th>
-				<th>Sub2</th>
-				<th>Sub3</th>
-				<th>Percentage</th>
-				<th>Edit</th>
-				<th>Delete</th>
-			</tr>
-			<tr th:each="students:${list}">
-				<th th:text="${students.name}">Name</th>
-				<th th:text="${students.mobile}">Mobile</th>
-				<th th:text="${students.gender}">Gender</th>
-				<th th:text="${students.sub1}">Sub1</th>
-				<th th:text="${students.sub2}">Sub2</th>
-				<th th:text="${students.sub3}">Sub3</th>
-				<th th:text="${#numbers.formatDecimal((students.sub1+students.sub2+students.sub3)/3.0,2,2)}">Percentage</th>
-				<th><a th:href="'/edit?id='+${students.id}"><button>Edit</button></a></th>
-				<th><a th:href="'/delete?id='+${students.id}"><button>Delete</button></a></th>
-			</tr>
+	<div class="table-container" th:if="${list}">
+		<table>
+			<thead>
+				<tr>
+					<th>Name</th>
+					<th>Mobile</th>
+					<th>Gender</th>
+					<th>Sub1</th>
+					<th>Sub2</th>
+					<th>Sub3</th>
+					<th>Percentage</th>
+					<th>Edit</th>
+					<th>Delete</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="students:${list}">
+					<td th:text="${students.name}">Name</td>
+					<td th:text="${students.mobile}">Mobile</td>
+					<td th:text="${students.gender}">Gender</td>
+					<td th:text="${students.sub1}">Sub1</td>
+					<td th:text="${students.sub2}">Sub2</td>
+					<td th:text="${students.sub3}">Sub3</td>
+					<td th:text="${#numbers.formatDecimal(students.percentage,2,2)}">Percentage</td>
+					<td><a th:href="'/edit?id='+${students.id}"><button>Edit</button></a></td>
+					<td><a th:href="'/delete?id='+${students.id}"><button>Delete</button></a></td>
+				</tr>
+			</tbody>
 		</table>
 	</div>
-	<br>
-	<div th:if="${update}">
+	<div align="center" th:if="${update}">
 		<form method="POST" action="/edit" th:object="${student}">
-		<input type="hidden" name="id" th:field="*{id}">
-		<!-- Input for Student Name -->
-		<label for="studentName">Student Name:</label> <input type="text"
-			id="studentName" name="name" th:field="*{name}" required>
-
-		<!-- Input for Mobile Number -->
-		<label for="mobileNumber">Mobile Number:</label> <input type="tel"
-			id="mobileNumber" name="mobile" th:field="*{mobile}" required>
-
-		<!-- Input for Gender -->
-		<div class="radio-group">
-			<label>Gender:</label> <label class="radio-label"> <input
-				type="radio" id="male" name="gender" th:field="*{gender}" value="male"> Male
-			</label> <label class="radio-label"> <input type="radio" id="female"
-				name="gender" th:field="*{gender}" value="female"> Female
-			</label>
-		</div>
-
-		<!-- Input for Marks of Subject 1 -->
-		<label for="subject1">Marks in Subject 1:</label> <input type="number"
-			id="subject1" name="sub1" th:field="*{sub1}" min="0" required>
-
-		<!-- Input for Marks of Subject 2 -->
-		<label for="subject2">Marks in Subject 2:</label> <input type="number"
-			id="subject2" name="sub2" th:field="*{sub2}" min="0" required>
-
-		<!-- Input for Marks of Subject 3 -->
-		<label for="subject3">Marks in Subject 3:</label> <input type="number"
-			id="subject3" name="sub3" th:field="*{sub3}" min="0" required>
-
-		<!-- Submit Button -->
-		<input type="submit" value="Submit">
-	</form>
+			<input type="hidden" name="id" th:field="*{id}">
+			<label for="studentName">Student Name:</label>
+			<input type="text" id="studentName" name="name" th:field="*{name}" required>
+			<label for="mobileNumber">Mobile Number:</label>
+			<input type="tel" id="mobileNumber" name="mobile" th:field="*{mobile}" required>
+			<div class="radio-group">
+				<label>Gender:</label>
+				<label class="radio-label">
+					<input type="radio" id="male" name="gender" th:field="*{gender}" value="male"> Male
+				</label>
+				<label class="radio-label">
+					<input type="radio" id="female" name="gender" th:field="*{gender}" value="female"> Female
+				</label>
+			</div>
+			<label for="subject1">Marks in Subject 1:</label>
+			<input type="number" id="subject1" name="sub1" th:field="*{sub1}" min="0" required>
+			<label for="subject2">Marks in Subject 2:</label>
+			<input type="number" id="subject2" name="sub2" th:field="*{sub2}" min="0" required>
+			<label for="subject3">Marks in Subject 3:</label>
+			<input type="number" id="subject3" name="sub3" th:field="*{sub3}" min="0" required>
+			<input type="submit" value="Submit">
+		</form>
 	</div>
-	<br>
-	<br>
 	<div align="center">
 		<a href="/insert"><button>Insert</button></a>
 	</div>
-	<br>
-	<div th:if="${insert}">
+	<div align="center" th:if="${insert}">
 		<form method="POST" action="/insert">
-        <!-- Input for Student Name -->
-        <label for="studentName">Student Name:</label>
-        <input type="text" id="studentName" name="name" required>
-        
-        <!-- Input for Mobile Number -->
-        <label for="mobileNumber">Mobile Number:</label>
-        <input type="tel" id="mobileNumber" name="mobile" required>
-        
-        <!-- Input for Gender -->
-        <div class="radio-group">
-            <label>Gender:</label>
-            <label class="radio-label">
-                <input type="radio" id="male" name="gender" value="male">
-                Male
-            </label>
-            <label class="radio-label">
-                <input type="radio" id="female" name="gender" value="female">
-                Female
-            </label>
-        </div>
-        
-        <!-- Input for Marks of Subject 1 -->
-        <label for="subject1">Marks in Subject 1:</label>
-        <input type="number" id="subject1" name="sub1" min="0" required>
-        
-        <!-- Input for Marks of Subject 2 -->
-        <label for="subject2">Marks in Subject 2:</label>
-        <input type="number" id="subject2" name="sub2" min="0" required>
-        
-        <!-- Input for Marks of Subject 3 -->
-        <label for="subject3">Marks in Subject 3:</label>
-        <input type="number" id="subject3" name="sub3" min="0" required>
-        
-        <!-- Submit Button -->
-        <input type="submit" value="Submit">
-    </form>
+			<label for="studentName">Student Name:</label>
+			<input type="text" id="studentName" name="name" required>
+			<label for="mobileNumber">Mobile Number:</label>
+			<input type="tel" id="mobileNumber" name="mobile" required>
+			<div class="radio-group">
+				<label>Gender:</label>
+				<label class="radio-label">
+					<input type="radio" id="male" name="gender" value="male"> Male
+				</label>
+				<label class="radio-label">
+					<input type="radio" id="female" name="gender" value="female"> Female
+				</label>
+			</div>
+			<label for="subject1">Marks in Subject 1:</label>
+			<input type="number" id="subject1" name="sub1" min="0" required>
+			<label for="subject2">Marks in Subject 2:</label>
+			<input type="number" id="subject2" name="sub2" min="0" required>
+			<label for="subject3">Marks in Subject 3:</label>
+			<input type="number" id="subject3" name="sub3" min="0" required>
+			<input type="submit" value="Submit">
+		</form>
+	</div>
+	<div class="search-container">
+		<label>Search records by:</label>
+		<form action="/search" method="post">
+			<select name="data" id="searchBy" onchange="showInputBox()">
+				<option value="">Select an option</option>
+				<option value="name">Name</option>
+				<option value="mobile">Mobile</option>
+				<option value="gender">Gender</option>
+				<option value="marks">Marks</option>
+				<option value="percentage">Percentage</option>
+			</select>
+			<label id="inputLabel"></label>
+			<input type="text" id="inputBox" name="searchValue">
+			<button type="submit">Search</button>
+		</form>
 	</div>
 </body>
 </html>
